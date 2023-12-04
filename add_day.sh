@@ -12,11 +12,9 @@ cargo new $CRATE
 # check that things build
 cargo build
 
-git add Cargo.toml
-git add $CRATE
-
-
 cd $CRATE ; aoc -d ${DAY} d ; cd ..
 
+git add Cargo.toml
+git add $CRATE
 git commit -m "feat: adding ${CRATE}"
   
