@@ -15,4 +15,8 @@ cargo build
 git add Cargo.toml
 git add $CRATE
 
+
+cd $CRATE ; aoc -d ${DAY} d ; cd ..
+
 git commit -m "feat: adding ${CRATE}"
+  
