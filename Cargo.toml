@@ -2,6 +2,7 @@
 resolver = "2"
 
 members = [
+"day01",
 # placeholder
 ]
 
