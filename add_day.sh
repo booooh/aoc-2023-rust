@@ -8,11 +8,13 @@ sed -i -e '/# placeholder/i "'${CRATE}'",' Cargo.toml
 
 # create new crate
 cargo new $CRATE
+carg add --package ${CRATE} --path ../common
 
 # check that things build
 cargo build
 
 cd $CRATE ; aoc -d ${DAY} d ; cd ..
+
 
 git add Cargo.toml
 git add $CRATE
