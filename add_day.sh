@@ -13,7 +13,7 @@ carg add --package ${CRATE} --path ../common
 # check that things build
 cargo build
 
-cd $CRATE ; aoc -d ${DAY} d ; cd ..
+cd $CRATE ; aoc -d ${DAY} d ; mv input input_part1 ; cd ..
 
 
 git add Cargo.toml
