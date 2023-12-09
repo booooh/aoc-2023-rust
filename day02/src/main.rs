@@ -69,12 +69,26 @@ fn part1() {
         let foo = parse_game_line(&line.unwrap());
         let res = (foo.0, get_max_cubes(foo.1));
         if res.1.red <=12 && res.1.green <= 13 && res.1.blue <=14 {
-            println!("{:?}", res);
             sum += res.0;
         }
     }
     println!("{:?}", sum);
 }
+
+fn part2() {
+    let mut sum : u32 = 0;
+    let lines = read_lines("day02/input").unwrap();
+    for line in lines {
+        let l = line.unwrap();
+        let foo = parse_game_line(&l);
+        let res = (foo.0, get_max_cubes(foo.1));
+        sum += (res.1.red * res.1.blue * res.1.green);
+    }
+    println!("{:?}", sum);
+
+}
+
 fn main() {
     part1();
+    part2();
 }
