@@ -1,15 +1,17 @@
+use std::collections::HashMap;
+
 use common::read_lines;
 
 const M: usize = 140;
 const N: usize = 140;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Hash, Eq, Clone)]
 struct Coord {
     x: usize,
     y: usize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct SchemaItem {
     start: Coord,
     end: Coord,
@@ -87,8 +89,6 @@ impl Schematic {
             .map(|(idx, _)| to_coord(idx))
             .collect();
 
-        let mut num_items = 0;
-        let mut num_parts = 0;
         for row in 0..N {
             let mut found_item = "".to_string();
             // iterate over all columns, finding digits
@@ -114,7 +114,6 @@ impl Schematic {
                         end: Coord { x: end_x, y: row },
                         value: found_item.parse().unwrap(),
                     };
-                    num_items += 1;
 
                     // check if the item is a part
                     let has_symbol_neighbor = item
@@ -124,7 +123,6 @@ impl Schematic {
 
                     if has_symbol_neighbor {
                         parts.push(item);
-                        num_parts += 1;
                     }
                     found_item = "".to_string();
                 }
@@ -140,7 +138,6 @@ impl Schematic {
 }
 
 fn part1() {
-    let mut sum: usize = 0;
     let mut all_chars = Vec::new();
     let lines = read_lines("day03/input").unwrap();
     for line in lines {
@@ -149,9 +146,42 @@ fn part1() {
 
     let s = Schematic::new(all_chars[..].try_into().unwrap());
     // println!("{:?}", s);
-    sum = s.parts.iter().fold(0, |acc, p| acc + p.value as usize);
+    let sum = s.parts.iter().fold(0, |acc, p| acc + p.value as usize);
+    println!("{}", sum);
+}
+
+fn part2() {
+    let mut all_chars = Vec::new();
+    let lines = read_lines("day03/input").unwrap();
+    for line in lines {
+        all_chars.extend(line.unwrap().chars())
+    }
+
+    let s = Schematic::new(all_chars[..].try_into().unwrap());
+
+    let mut possible_gears = HashMap::<Coord, Vec<SchemaItem>>::new();
+
+    for p in s.parts {
+        // for each part, find any '*' coordinates that it is adjacent to, and add them to the hashmap
+        p.get_neighbor_coords()
+            .iter()
+            .filter(|c| s.symbols.contains(c) && s.scheme[c.y * M + c.x] == '*')
+            .for_each(|c| {
+                possible_gears
+                    .entry(c.clone())
+                    .or_insert(Vec::new())
+                    .push(p.clone())
+            });
+    }
+
+    let sum: u32 = possible_gears
+        .iter()
+        .filter(|(_, v)| v.len() == 2)
+        .map(|(_, v)| v[0].value * v[1].value)
+        .sum();
     println!("{}", sum);
 }
 fn main() {
     part1();
+    part2();
 }
