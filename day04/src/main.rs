@@ -1,4 +1,3 @@
-use core::num;
 use std::collections::{HashMap, HashSet};
 
 use common::read_lines;
