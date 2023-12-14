@@ -1,6 +1,5 @@
 use core::panic;
 use std::{
-    borrow::BorrowMut,
     fs::File,
     io::{BufRead, BufReader, Lines},
     iter::Peekable,
@@ -54,16 +53,7 @@ impl RangeMap {
             .unwrap()
             .expect("map title")
             .ends_with("map:"));
-        // let next_val = peekable_lines.peek();
 
-        println!("going to read a map\n\n");
-        // while the next value is not the end of the file, and is not an empty line
-        // let next_val = peekable_lines.peek();
-        // while next_val.is_some() && !next_val.unwrap().as_ref().unwrap().is_empty() {
-        //     map.0
-        //         .push(Range::parse(next_val.unwrap().as_ref().unwrap()));
-        //     _ = peekable_lines.next(); // advance the iterator so we consume what we just tested
-        // }
         loop {
             let peek_val = peekable_lines.peek();
             match peek_val {
@@ -72,7 +62,6 @@ impl RangeMap {
                 }
                 Some(Ok(line)) => {
                     if line == "" {
-                        println!("Got an empty line!");
                         return map;
                     } else {
                         map.0.push(Range::parse(line));
@@ -82,7 +71,17 @@ impl RangeMap {
                 Some(Err(_)) => panic!("An error occurred"),
             }
         }
-        map
+    }
+
+    fn get_dest(&self, source: usize) -> usize {
+        // iterate on all ranges until a dest is found - otherwise, it is mapped directly
+        for r in self.0.iter() {
+            if source >= r.src_range_start && source < r.src_range_start + r.range_size {
+                return r.dest_range_start + (source - r.src_range_start);
+            }
+        }
+
+        return source;
     }
 }
 
@@ -117,15 +116,34 @@ impl Almanac {
             humidity_to_location,
         }
     }
+
+    fn location_for_seed(&self, seed: usize) -> usize {
+        let soil = self.seed_to_soil.get_dest(seed);
+        let fertilizer = self.soil_to_fertilizer.get_dest(soil);
+        let water = self.fertilizer_to_water.get_dest(fertilizer);
+        let light = self.water_to_light.get_dest(water);
+        let temp = self.light_to_temperature.get_dest(light);
+        let humidity = self.temperature_to_humidity.get_dest(temp);
+        return self.humidity_to_location.get_dest(humidity);
+    }
 }
 
 fn part1() {
     let lines: Lines<BufReader<File>> = read_lines("day05/input").unwrap();
     let almanac = Almanac::parse(lines);
-    println!("{:?}", almanac);
+    for seed in almanac.seeds.iter() {
+        println!("{:?} -> {:?}", seed, almanac.location_for_seed(*seed));
+    }
+
+    let location = almanac
+        .seeds
+        .iter()
+        .map(|seed| almanac.location_for_seed(*seed))
+        .min()
+        .unwrap();
+    println!("{:?}", location);
 }
 
 fn main() {
     part1();
-    println!("Hello, world!");
 }
