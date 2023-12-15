@@ -1,4 +1,9 @@
-use std::{fs, io, iter::zip, str::FromStr};
+use std::{
+    fs,
+    io::{self, Error},
+    iter::zip,
+    str::FromStr,
+};
 
 use common::read_lines;
 
@@ -54,6 +59,38 @@ impl FromStr for Records {
     }
 }
 
+impl FromStr for Race {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut lines = s.split("\n");
+        let time = lines
+            .next()
+            .unwrap()
+            .split(" ")
+            .filter(|p| !p.is_empty())
+            .skip(1)
+            .collect::<String>()
+            .parse::<usize>()
+            .unwrap();
+
+        let distance = lines
+            .next()
+            .unwrap()
+            .split(" ")
+            .filter(|p| !p.is_empty())
+            .skip(1)
+            .collect::<String>()
+            .parse::<usize>()
+            .unwrap();
+
+        return Ok(Self {
+            record_distance: distance,
+            time: time,
+        });
+    }
+}
+
 fn part1() {
     let lines = fs::read_to_string("day06/input").unwrap();
     let r = lines.parse::<Records>().unwrap();
@@ -65,6 +102,13 @@ fn part1() {
     println!("{:?}", p);
 }
 
+fn part2() {
+    let lines = fs::read_to_string("day06/input").unwrap();
+    let r = lines.parse::<Race>().unwrap();
+    println!("{:?}", r.ways_to_beat().len());
+}
+
 fn main() {
     part1();
+    part2();
 }
