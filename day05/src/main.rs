@@ -223,13 +223,6 @@ impl Almanac {
         return self.humidity_to_location.get_dest(humidity);
     }
 
-    fn get_locations_for_range(&self, r: std::ops::Range<usize>) -> Vec<usize> {
-        println!("going to look for the locations of range {:?}", r);
-        r.into_iter()
-            .map(|seed| self.location_for_seed(seed))
-            .collect()
-    }
-
     fn seed_ranges_for_location_range(&self, location_range: &Range) -> Vec<Range> {
         let mut res = Vec::new();
         // expect this to be a vector with one element (since we're taking the range directly from there)

@@ -5,8 +5,6 @@ use std::{
     str::FromStr,
 };
 
-use common::read_lines;
-
 #[derive(Debug, Clone)]
 struct Race {
     time: usize,

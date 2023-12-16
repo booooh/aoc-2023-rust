@@ -9,14 +9,12 @@ struct GameResults {
     blue: u32,
 }
 
-struct RoundResults {
-    red: u32,
-    green: u32,
-    blue: u32,
-}
-
 fn parse_subset(subset: &str) -> GameResults {
-    let mut res = GameResults { red: 0, blue:0, green: 0 };
+    let mut res = GameResults {
+        red: 0,
+        blue: 0,
+        green: 0,
+    };
     let cubes_picked = subset.split(",");
     for p in cubes_picked {
         let val = p.trim().split(" ").next().unwrap().parse::<u32>();
@@ -34,24 +32,26 @@ fn parse_subset(subset: &str) -> GameResults {
         }
     }
     return res;
-
 }
 
-fn parse_game_line(line: &str) -> (u32, Vec<GameResults>)
-{
+fn parse_game_line(line: &str) -> (u32, Vec<GameResults>) {
     let mut res = Vec::new();
     let re = Regex::new(r"Game (?<id>[0-9]*): (?<rest>([^;]*;)*)(?<last>[^;]*)").unwrap();
-    let mut id : u32 = 0;
+    let mut id: u32 = 0;
     for cap in re.captures_iter(line) {
-         id = (&cap["id"]).trim().parse::<u32>().unwrap();
-         let mut all_picks = vec![&cap["last"]];
-         all_picks.extend((&cap["rest"]).split(";"));
-         res = all_picks.iter().filter(|&x| !x.trim().is_empty() ).map(|subset| parse_subset(subset)).collect();
+        id = (&cap["id"]).trim().parse::<u32>().unwrap();
+        let mut all_picks = vec![&cap["last"]];
+        all_picks.extend((&cap["rest"]).split(";"));
+        res = all_picks
+            .iter()
+            .filter(|&x| !x.trim().is_empty())
+            .map(|subset| parse_subset(subset))
+            .collect();
     }
     return (id, res);
 }
 
-fn get_max_cubes(game: Vec<GameResults>) -> GameResults{
+fn get_max_cubes(game: Vec<GameResults>) -> GameResults {
     let mut res = game[0].clone();
     for pick in game {
         res.red = cmp::max(res.red, pick.red);
@@ -63,12 +63,12 @@ fn get_max_cubes(game: Vec<GameResults>) -> GameResults{
 }
 
 fn part1() {
-    let mut sum : u32 = 0;
+    let mut sum: u32 = 0;
     let lines = read_lines("day02/input").unwrap();
     for line in lines {
         let foo = parse_game_line(&line.unwrap());
         let res = (foo.0, get_max_cubes(foo.1));
-        if res.1.red <=12 && res.1.green <= 13 && res.1.blue <=14 {
+        if res.1.red <= 12 && res.1.green <= 13 && res.1.blue <= 14 {
             sum += res.0;
         }
     }
@@ -76,16 +76,15 @@ fn part1() {
 }
 
 fn part2() {
-    let mut sum : u32 = 0;
+    let mut sum: u32 = 0;
     let lines = read_lines("day02/input").unwrap();
     for line in lines {
         let l = line.unwrap();
         let foo = parse_game_line(&l);
         let res = (foo.0, get_max_cubes(foo.1));
-        sum += (res.1.red * res.1.blue * res.1.green);
+        sum += res.1.red * res.1.blue * res.1.green;
     }
     println!("{:?}", sum);
-
 }
 
 fn main() {
